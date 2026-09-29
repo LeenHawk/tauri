@@ -95,7 +95,7 @@ pub fn entry_point(_attributes: TokenStream, item: TokenStream) -> TokenStream {
 
       #[cfg(target_env = "ohos")]
       #[napi_derive_ohos::napi]
-      pub fn tauri_ohos_plugin_initialize(callback: napi_ohos::JsFunction, files: String, cache: String, temp: String) -> napi_ohos::Result<()> {
+      pub fn tauri_ohos_plugin_initialize(callback: napi_ohos::bindgen_prelude::Function<'_, String, ()>, files: String, cache: String, temp: String) -> napi_ohos::Result<()> {
         ::tauri::plugin::mobile::initialize_ohos_plugin_bridge(callback, files, cache, temp)
       }
 

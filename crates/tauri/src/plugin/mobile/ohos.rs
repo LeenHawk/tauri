@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: MIT
 
 use super::{ErrorResponse, PendingPluginCallHandler, PluginInvokeError, PENDING_PLUGIN_CALLS, PENDING_PLUGIN_CALLS_ID};
-use napi_ohos::{JsFunction, Status, threadsafe_function::{ErrorStrategy, ThreadsafeFunction, ThreadsafeFunctionCallMode}};
+use napi_ohos::{Status, bindgen_prelude::Function, threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode}};
 use std::sync::{Mutex, atomic::Ordering};
 use std::thread::{self, ThreadId};
 
 struct Invoker {
-  callback: ThreadsafeFunction<String, ErrorStrategy::Fatal>,
+  callback: ThreadsafeFunction<String, (), String, Status, false>,
   main_thread: ThreadId,
   files: std::path::PathBuf,
   cache: std::path::PathBuf,
@@ -36,15 +36,13 @@ pub(super) fn ensure_worker_thread() -> Result<(), PluginInvokeError> {
 }
 
 /// Called by the native Ability before RustAbility.onCreate, never by web content.
-pub fn initialize_ohos_plugin_bridge(callback: JsFunction, files: String, cache: String, temp: String) -> napi_ohos::Result<()> {
+pub fn initialize_ohos_plugin_bridge(callback: Function<'_, String, ()>, files: String, cache: String, temp: String) -> napi_ohos::Result<()> {
   for path in [&files, &cache, &temp] {
     if !std::path::Path::new(path).is_absolute() {
       return Err(napi_ohos::Error::from_reason("OHOS sandbox directories must be absolute"));
     }
   }
-  let callback: ThreadsafeFunction<String, ErrorStrategy::Fatal> = callback.create_threadsafe_function(0, |ctx| {
-    Ok(vec![ctx.env.create_string(&ctx.value)?])
-  })?;
+  let callback = callback.build_threadsafe_function::<String>().callee_handled::<false>().build()?;
   let mut invoker = INVOKER.lock().unwrap();
   if invoker.is_some() {
     return Err(napi_ohos::Error::from_reason("OHOS plugin bridge is already initialized"));
