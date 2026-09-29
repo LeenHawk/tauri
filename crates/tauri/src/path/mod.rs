@@ -158,26 +158,26 @@ pub enum BaseDirectory {
   AppLog = 17,
   /// The Desktop directory.
   /// Resolves to [`crate::path::PathResolver::desktop_dir`].
-  #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+  #[cfg(not(target_os = "android"))]
   Desktop = 18,
   /// The Executable directory.
   /// Resolves to [`crate::path::PathResolver::executable_dir`].
-  #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+  #[cfg(not(target_os = "android"))]
   Executable = 19,
   /// The Font directory.
   /// Resolves to [`crate::path::PathResolver::font_dir`].
-  #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+  #[cfg(not(target_os = "android"))]
   Font = 20,
   /// The Home directory.
   /// Resolves to [`crate::path::PathResolver::home_dir`].
   Home = 21,
   /// The Runtime directory.
   /// Resolves to [`crate::path::PathResolver::runtime_dir`].
-  #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+  #[cfg(not(target_os = "android"))]
   Runtime = 22,
   /// The Template directory.
   /// Resolves to [`crate::path::PathResolver::template_dir`].
-  #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+  #[cfg(not(target_os = "android"))]
   Template = 23,
 }
 
@@ -204,15 +204,15 @@ impl BaseDirectory {
       Self::AppLog => "$APPLOG",
       Self::Home => "$HOME",
 
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       Self::Desktop => "$DESKTOP",
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       Self::Executable => "$EXE",
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       Self::Font => "$FONT",
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       Self::Runtime => "$RUNTIME",
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       Self::Template => "$TEMPLATE",
     }
   }
@@ -240,15 +240,15 @@ impl BaseDirectory {
       "$APPLOG" => Self::AppLog,
       "$HOME" => Self::Home,
 
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       "$DESKTOP" => Self::Desktop,
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       "$EXE" => Self::Executable,
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       "$FONT" => Self::Font,
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       "$RUNTIME" => Self::Runtime,
-      #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+      #[cfg(not(target_os = "android"))]
       "$TEMPLATE" => Self::Template,
 
       _ => return None,
@@ -339,15 +339,15 @@ fn resolve_path<R: Runtime>(
     BaseDirectory::AppCache => resolver.app_cache_dir(),
     BaseDirectory::AppLog => resolver.app_log_dir(),
     BaseDirectory::Home => resolver.home_dir(),
-    #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+    #[cfg(not(target_os = "android"))]
     BaseDirectory::Desktop => resolver.desktop_dir(),
-    #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+    #[cfg(not(target_os = "android"))]
     BaseDirectory::Executable => resolver.executable_dir(),
-    #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+    #[cfg(not(target_os = "android"))]
     BaseDirectory::Font => resolver.font_dir(),
-    #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+    #[cfg(not(target_os = "android"))]
     BaseDirectory::Runtime => resolver.runtime_dir(),
-    #[cfg(not(any(target_os = "android", target_env = "ohos")))]
+    #[cfg(not(target_os = "android"))]
     BaseDirectory::Template => resolver.template_dir(),
   }?;
 
