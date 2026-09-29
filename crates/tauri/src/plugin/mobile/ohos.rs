@@ -4,10 +4,12 @@
 
 use super::{ErrorResponse, PendingPluginCallHandler, PluginInvokeError, PENDING_PLUGIN_CALLS, PENDING_PLUGIN_CALLS_ID};
 use napi_ohos::{Status, bindgen_prelude::Function, threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode}};
-use std::sync::{Mutex, atomic::Ordering};
+use std::sync::{Mutex, atomic::{AtomicU64, Ordering}};
+use crate::{AppHandle, Manager, Runtime};
 use std::thread::{self, ThreadId};
 
 struct Invoker {
+  generation: u64,
   callback: ThreadsafeFunction<String, (), String, Status, false>,
   main_thread: ThreadId,
   files: std::path::PathBuf,
@@ -15,15 +17,23 @@ struct Invoker {
   temp: std::path::PathBuf,
 }
 
+struct Session(u64);
+static GENERATION: AtomicU64 = AtomicU64::new(1);
 static INVOKER: Mutex<Option<Invoker>> = Mutex::new(None);
 
 fn unavailable(message: &str) -> PluginInvokeError {
   ErrorResponse { code: Some("OHOS_PLUGIN_UNAVAILABLE".into()), message: Some(message.into()), data: () }.into()
 }
 
-pub(super) fn ensure_ready() -> Result<(), PluginInvokeError> {
-  if INVOKER.lock().unwrap().is_none() {
-    return Err(unavailable("Initialize the OHOS plugin bridge before starting Tauri"));
+pub(super) fn register_app<R: Runtime>(app: &AppHandle<R>) -> Result<(), PluginInvokeError> {
+  let invoker = INVOKER.lock().unwrap();
+  let invoker = invoker.as_ref().ok_or_else(|| unavailable("Initialize the OHOS plugin bridge before starting Tauri"))?;
+  if let Some(session) = app.try_state::<Session>() {
+    if session.0 != invoker.generation {
+      return Err(unavailable("This application handle belongs to a destroyed Ability"));
+    }
+  } else {
+    app.manage(Session(invoker.generation));
   }
   Ok(())
 }
@@ -47,15 +57,18 @@ pub fn initialize_ohos_plugin_bridge(callback: Function<'_, String, ()>, files: 
   if invoker.is_some() {
     return Err(napi_ohos::Error::from_reason("OHOS plugin bridge is already initialized"));
   }
-  *invoker = Some(Invoker { callback, main_thread: thread::current().id(), files: files.into(), cache: cache.into(), temp: temp.into() });
+  *invoker = Some(Invoker { generation: GENERATION.fetch_add(1, Ordering::Relaxed), callback, main_thread: thread::current().id(), files: files.into(), cache: cache.into(), temp: temp.into() });
   Ok(())
 }
 
-pub(super) fn invoke(name: &str, command: &str, payload: serde_json::Value, handler: PendingPluginCallHandler) -> Result<(), PluginInvokeError> {
+pub(super) fn invoke<R: Runtime>(app: &AppHandle<R>, name: &str, command: &str, payload: serde_json::Value, handler: PendingPluginCallHandler) -> Result<(), PluginInvokeError> {
   let invoker = INVOKER.lock().unwrap();
   let Some(invoker) = invoker.as_ref() else {
     return Err(unavailable("OHOS Ability is not active"));
   };
+  if app.try_state::<Session>().map(|session| session.0) != Some(invoker.generation) {
+    return Err(unavailable("This application handle belongs to a destroyed Ability"));
+  }
   let id = PENDING_PLUGIN_CALLS_ID.fetch_add(1, Ordering::Relaxed);
   let request = serde_json::json!({ "id": id, "plugin": name, "command": command, "payload": payload.to_string() });
   let pending = PENDING_PLUGIN_CALLS.get_or_init(Default::default);

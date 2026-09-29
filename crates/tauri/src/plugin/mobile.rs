@@ -363,7 +363,7 @@ pub use ohos::{close_ohos_plugin_bridge, initialize_ohos_plugin_bridge, ohos_plu
 impl<R: Runtime, C: DeserializeOwned> PluginApi<R, C> {
   /// Registers a native plugin served by the Ability's ArkTS dispatcher.
   pub fn register_ohos_plugin(&self) -> Result<PluginHandle<R>, PluginInvokeError> {
-    ohos::ensure_ready()?;
+    ohos::register_app(&self.handle)?;
     Ok(PluginHandle { name: self.name, handle: self.handle.clone() })
   }
 }
@@ -376,7 +376,7 @@ pub(crate) fn run_command<R: Runtime, C: AsRef<str>, F: FnOnce(PluginResponse) +
   payload: serde_json::Value,
   handler: F,
 ) -> Result<(), PluginInvokeError> {
-  ohos::invoke(name, command.as_ref(), payload, Box::new(handler))
+  ohos::invoke(_handle, name, command.as_ref(), payload, Box::new(handler))
 }
 
 #[cfg(target_os = "ios")]
