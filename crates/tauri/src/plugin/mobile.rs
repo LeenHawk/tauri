@@ -357,14 +357,20 @@ impl<R: Runtime> PluginHandle<R> {
 mod ohos;
 #[cfg(target_env = "ohos")]
 #[doc(hidden)]
-pub use ohos::{close_ohos_plugin_bridge, initialize_ohos_plugin_bridge, ohos_plugin_response, ohos_plugin_directory};
+pub use ohos::{
+  close_ohos_plugin_bridge, initialize_ohos_plugin_bridge, ohos_plugin_directory,
+  ohos_plugin_response,
+};
 
 #[cfg(target_env = "ohos")]
 impl<R: Runtime, C: DeserializeOwned> PluginApi<R, C> {
   /// Registers a native plugin served by the Ability's ArkTS dispatcher.
   pub fn register_ohos_plugin(&self) -> Result<PluginHandle<R>, PluginInvokeError> {
     ohos::register_app(&self.handle)?;
-    Ok(PluginHandle { name: self.name, handle: self.handle.clone() })
+    Ok(PluginHandle {
+      name: self.name,
+      handle: self.handle.clone(),
+    })
   }
 }
 
