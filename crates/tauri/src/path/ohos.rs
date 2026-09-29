@@ -14,7 +14,7 @@ impl<R: Runtime> Clone for PathResolver<R> {
   }
 }
 impl<R: Runtime> PathResolver<R> {
-  /// Returns the app-scoped path supplied by the OHOS Ability.
+  /// Returns the final component of the supplied path.
   pub fn file_name(&self, path: &str) -> Option<String> {
     Path::new(path)
       .file_name()
