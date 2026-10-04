@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.11.6]
+
+### Security fixes
+
+- Backport upstream `e901f1de9`: scope channel payload queues to their owning webview and purge them on close (GHSA-w28w-mhc8-qvjv).
+
 ## \[2.11.5]
 
 ### Dependencies
