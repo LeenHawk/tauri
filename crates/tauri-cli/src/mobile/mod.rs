@@ -391,12 +391,13 @@ struct OptionsServerInfo {
 }
 
 /// Path of the file the `dev` and `build` commands use to share the options server details
-/// with the Xcode and Android Studio build scripts.
+/// with the Xcode, Android Studio and DevEco Studio build scripts.
 fn options_server_file(target: Target, tauri_dir: &Path) -> PathBuf {
   let project_dir = match target {
     Target::Android => "android",
     #[cfg(target_os = "macos")]
     Target::Ios => "apple",
+    Target::OpenHarmony => "ohos",
   };
   tauri_dir
     .join("gen")
@@ -498,7 +499,7 @@ impl Drop for OptionsHandle {
   }
 }
 
-/// Writes CLI options to be used later on the Xcode and Android Studio build commands
+/// Writes CLI options to be used later on the Xcode, Android Studio and DevEco Studio build commands
 pub fn write_options(
   target: Target,
   tauri_dir: &Path,

@@ -37,9 +37,7 @@ use log::Level;
 use serde::{Deserialize, Serialize};
 use std::io::{BufReader, Write};
 use std::process::{Command, ExitStatus, Output, Stdio, exit};
-use std::{
-  ffi::OsString, fs::read_to_string, io::BufRead, path::PathBuf, str::FromStr,
-};
+use std::{ffi::OsString, fs::read_to_string, io::BufRead, path::PathBuf, str::FromStr};
 
 use crate::error::Context;
 

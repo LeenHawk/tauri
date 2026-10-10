@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-License-Identifier: MIT
 
-use crate::{error::Context, helpers::template, Result};
+use crate::{Result, error::Context, helpers::template};
 use cargo_mobile2::{
   config::app::App,
   open_harmony::{config::Config, target::Target},
@@ -11,13 +11,13 @@ use cargo_mobile2::{
   util,
 };
 use handlebars::Handlebars;
-use include_dir::{include_dir, Dir};
+use include_dir::{Dir, include_dir};
 
 use std::path::Path;
 
 const TEMPLATE_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/templates/mobile/open-harmony");
 
-pub fn gen(
+pub fn generate(
   app: &App,
   config: &Config,
   (handlebars, mut map): (Handlebars, template::JsonMap),

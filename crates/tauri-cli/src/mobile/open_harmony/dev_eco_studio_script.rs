@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-License-Identifier: MIT
 
-use super::{detect_target_ok, ensure_init, env, get_app, get_config, read_options, MobileTarget};
+use super::{MobileTarget, detect_target_ok, ensure_init, env, get_app, get_config, read_options};
 use crate::{
-  error::{bail, Context},
+  ErrorExt, Result,
+  error::{Context, bail},
   helpers::config::{get_config as get_tauri_config, reload_config as reload_tauri_config},
   interface::AppInterface,
   mobile::CliOptions,
-  ErrorExt, Result,
 };
 use clap::{ArgAction, Parser};
 
 use cargo_mobile2::{
   open_harmony::{hdc, target::Target},
   opts::Profile,
-  target::{call_for_targets_with_fallback, TargetTrait},
+  target::{TargetTrait, call_for_targets_with_fallback},
 };
 
 use std::path::Path;
@@ -48,7 +48,7 @@ pub fn command(options: Options) -> Result<()> {
 
   let mut tauri_config =
     get_tauri_config(tauri_utils::platform::Target::OpenHarmony, &[], dirs.tauri)?;
-  let cli_options = read_options(&tauri_config);
+  let cli_options = read_options(MobileTarget::OpenHarmony, dirs.tauri)?;
 
   if !cli_options.config.is_empty() {
     // reload config with merges from the ohos dev|build script
@@ -212,8 +212,14 @@ fn hdc_forward_port(
     let device = devices.first().unwrap();
     Some((device.id().to_string(), device.name().to_string()))
   } else if devices.len() > 1 {
-    bail!("Multiple OpenHarmony devices are connected ({}), please disconnect devices you do not intend to use so Tauri can determine which to use",
-      devices.iter().map(|d| d.name()).collect::<Vec<_>>().join(", "));
+    bail!(
+      "Multiple OpenHarmony devices are connected ({}), please disconnect devices you do not intend to use so Tauri can determine which to use",
+      devices
+        .iter()
+        .map(|d| d.name())
+        .collect::<Vec<_>>()
+        .join(", ")
+    );
   } else {
     // when building the app without running to a device, we might have an empty devices list
     None

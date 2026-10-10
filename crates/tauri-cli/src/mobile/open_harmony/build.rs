@@ -3,19 +3,19 @@
 // SPDX-License-Identifier: MIT
 
 use super::{
-  delete_codegen_vars, ensure_init, env, get_app, get_config, inject_resources, log_finished,
-  open_and_wait, MobileTarget, OptionsHandle,
+  MobileTarget, OptionsHandle, delete_codegen_vars, ensure_init, env, get_app, get_config,
+  inject_resources, log_finished, open_and_wait,
 };
 use crate::{
+  ConfigValue, Result,
   build::Options as BuildOptions,
   error::Context,
   helpers::{
-    config::{get_config as get_tauri_config, ConfigMetadata},
+    config::{ConfigMetadata, get_config as get_tauri_config},
     flock,
   },
   interface::{AppInterface, Options as InterfaceOptions},
-  mobile::{write_options, CliOptions},
-  ConfigValue, Result,
+  mobile::{CliOptions, write_options},
 };
 use clap::{ArgAction, Parser};
 
@@ -216,7 +216,7 @@ fn run_build(
     config: build_options.config,
     target_device: None,
   };
-  let handle = write_options(tauri_config, cli_options)?;
+  let handle = write_options(MobileTarget::OpenHarmony, tauri_dir, cli_options)?;
 
   inject_resources(config, tauri_config)?;
 

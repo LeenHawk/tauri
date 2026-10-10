@@ -3,18 +3,18 @@
 // SPDX-License-Identifier: MIT
 
 use super::{
-  ErrorResponse, PendingPluginCallHandler, PluginInvokeError, PENDING_PLUGIN_CALLS,
-  PENDING_PLUGIN_CALLS_ID,
+  ErrorResponse, PENDING_PLUGIN_CALLS, PENDING_PLUGIN_CALLS_ID, PendingPluginCallHandler,
+  PluginInvokeError,
 };
 use crate::{AppHandle, Manager, Runtime};
 use napi_ohos::{
+  Status,
   bindgen_prelude::Function,
   threadsafe_function::{ThreadsafeFunction, ThreadsafeFunctionCallMode},
-  Status,
 };
 use std::sync::{
-  atomic::{AtomicU64, Ordering},
   Mutex,
+  atomic::{AtomicU64, Ordering},
 };
 use std::thread::{self, ThreadId};
 
