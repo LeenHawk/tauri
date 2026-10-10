@@ -5723,7 +5723,7 @@ checksum = "c08d65885ee38876c4f86fa503fb49d7b507c2b62552df7c70b2fce627e06381"
 [[package]]
 name = "openharmony-ability"
 version = "0.3.0"
-source = "git+https://github.com/harmony-contrib/openharmony-ability.git#295a276a699ba2352addc69b8cacb6acd3be6ab1"
+source = "git+https://github.com/LeenHawk/openharmony-ability.git?rev=c5f0a450f7bbfedc52160f2fbeaa04886e0eb34b#c5f0a450f7bbfedc52160f2fbeaa04886e0eb34b"
 dependencies = [
  "futures-channel",
  "napi-derive-ohos",
@@ -5738,7 +5738,7 @@ dependencies = [
 [[package]]
 name = "openharmony-ability-derive"
 version = "0.3.0"
-source = "git+https://github.com/harmony-contrib/openharmony-ability.git#295a276a699ba2352addc69b8cacb6acd3be6ab1"
+source = "git+https://github.com/LeenHawk/openharmony-ability.git?rev=c5f0a450f7bbfedc52160f2fbeaa04886e0eb34b#c5f0a450f7bbfedc52160f2fbeaa04886e0eb34b"
 dependencies = [
  "proc-macro2",
  "quote",

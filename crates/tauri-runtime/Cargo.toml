@@ -49,7 +49,7 @@ webkit2gtk = { version = "=2.0", features = ["v2_40"] }
 jni = "0.21"
 
 [target.'cfg(target_env = "ohos")'.dependencies]
-openharmony-ability = { git = "https://github.com/harmony-contrib/openharmony-ability.git" }
+openharmony-ability = { git = "https://github.com/LeenHawk/openharmony-ability.git", rev = "c5f0a450f7bbfedc52160f2fbeaa04886e0eb34b" }
 
 [target.'cfg(all(target_vendor = "apple", not(target_os = "macos")))'.dependencies]
 objc2 = "0.6"
