@@ -11951,14 +11951,14 @@ dependencies = [
 [[patch.unused]]
 name = "cargo-mobile2"
 version = "0.22.4"
-source = "git+https://github.com/tauri-apps/cargo-mobile2?branch=feat%2Fohos#549bb6d663d9c04f2cd52b5a65669121ae175828"
+source = "git+https://github.com/LeenHawk/cargo-mobile2?branch=feat%2Fohos#549bb6d663d9c04f2cd52b5a65669121ae175828"
 
 [[patch.unused]]
 name = "tao"
 version = "0.36.0"
-source = "git+https://github.com/tauri-apps/tao?branch=feat%2Fopen-harmony#813572fbe582005e2fb513458bc212842745ceab"
+source = "git+https://github.com/LeenHawk/tao?branch=feat%2Fopen-harmony#813572fbe582005e2fb513458bc212842745ceab"
 
 [[patch.unused]]
 name = "wry"
 version = "0.56.0"
-source = "git+https://github.com/tauri-apps/wry?branch=feat%2Fopen-harmony#6aaf4b84b6e420015c6a14f264f1c7399f150392"
+source = "git+https://github.com/LeenHawk/wry?branch=fix%2Fohos-frame-origin#9feaf086c3bd02ca14a8a1492f87e7a7714ea2fb"
