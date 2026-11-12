@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-License-Identifier: MIT
 
-use super::{Error, Result};
-use crate::{plugin::mobile::ohos_plugin_directory, AppHandle, Runtime};
+use super::{AppDirectory, Error, Result};
+use crate::{AppHandle, Runtime, plugin::mobile::ohos_plugin_directory};
 use std::path::{Path, PathBuf};
 
 /// OHOS resolves app paths from the native Ability's sandbox, not Linux home directories.
@@ -32,33 +32,42 @@ impl<R: Runtime> PathResolver<R> {
   pub fn home_dir(&self) -> Result<PathBuf> {
     ohos_plugin_directory("files")
   }
-  /// Returns the app-scoped path supplied by the OHOS Ability.
+  /// Returns the app-scoped path supplied by the OHOS Ability,
+  /// unless overridden with the `app > appDirectoriesOverride` config.
   pub fn app_data_dir(&self) -> Result<PathBuf> {
-    ohos_plugin_directory("files")
+    self.app_dir(AppDirectory::Data, || ohos_plugin_directory("files"))
   }
-  /// Returns the app-scoped path supplied by the OHOS Ability.
+  /// Returns the app-scoped path supplied by the OHOS Ability,
+  /// unless overridden with the `app > appDirectoriesOverride` config.
   pub fn app_local_data_dir(&self) -> Result<PathBuf> {
-    ohos_plugin_directory("files")
+    self.app_dir(AppDirectory::LocalData, || ohos_plugin_directory("files"))
   }
   /// Returns the app-scoped path supplied by the OHOS Ability.
   pub fn cache_dir(&self) -> Result<PathBuf> {
     ohos_plugin_directory("cache")
   }
-  /// Returns the app-scoped path supplied by the OHOS Ability.
+  /// Returns the app-scoped path supplied by the OHOS Ability,
+  /// unless overridden with the `app > appDirectoriesOverride` config.
   pub fn app_cache_dir(&self) -> Result<PathBuf> {
-    ohos_plugin_directory("cache")
+    self.app_dir(AppDirectory::Cache, || ohos_plugin_directory("cache"))
   }
   /// Returns the app-scoped path supplied by the OHOS Ability.
   pub fn config_dir(&self) -> Result<PathBuf> {
     Ok(ohos_plugin_directory("files")?.join("config"))
   }
-  /// Returns the app-scoped path supplied by the OHOS Ability.
+  /// Returns the app-scoped path supplied by the OHOS Ability,
+  /// unless overridden with the `app > appDirectoriesOverride` config.
   pub fn app_config_dir(&self) -> Result<PathBuf> {
-    Ok(ohos_plugin_directory("files")?.join("config"))
+    self.app_dir(AppDirectory::Config, || {
+      Ok(ohos_plugin_directory("files")?.join("config"))
+    })
   }
-  /// Returns the app-scoped path supplied by the OHOS Ability.
+  /// Returns the app-scoped path supplied by the OHOS Ability,
+  /// unless overridden with the `app > appDirectoriesOverride` config.
   pub fn app_log_dir(&self) -> Result<PathBuf> {
-    Ok(ohos_plugin_directory("files")?.join("logs"))
+    self.app_dir(AppDirectory::Log, || {
+      Ok(ohos_plugin_directory("files")?.join("logs"))
+    })
   }
   /// Returns the app-scoped path supplied by the OHOS Ability.
   pub fn temp_dir(&self) -> Result<PathBuf> {
@@ -111,5 +120,9 @@ impl<R: Runtime> PathResolver<R> {
   /// Use a native picker or ResourceManager instead of assuming a globally accessible directory.
   pub fn resource_dir(&self) -> Result<PathBuf> {
     Err(Error::UnknownPath)
+  }
+
+  pub(super) fn app_handle(&self) -> &AppHandle<R> {
+    &self.0
   }
 }

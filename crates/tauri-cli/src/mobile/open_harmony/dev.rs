@@ -3,23 +3,23 @@
 // SPDX-License-Identifier: MIT
 
 use super::{
-  delete_codegen_vars, device_prompt, ensure_init, env, get_app, get_config, inject_resources,
-  open_and_wait, MobileTarget,
+  MobileTarget, delete_codegen_vars, device_prompt, ensure_init, env, get_app, get_config,
+  inject_resources, open_and_wait,
 };
 use crate::{
+  ConfigValue, ErrorExt, Result,
   dev::Options as DevOptions,
   error::Context,
   helpers::{
     app_paths::Dirs,
-    config::{get_config as get_tauri_config, ConfigMetadata},
+    config::{ConfigMetadata, get_config as get_tauri_config},
     flock,
   },
   interface::{AppInterface, MobileOptions, Options as InterfaceOptions},
   mobile::{
-    use_network_address_for_dev_url, write_options, CliOptions, DevChild, DevHost, DevProcess,
-    TargetDevice,
+    CliOptions, DevChild, DevHost, DevProcess, TargetDevice, use_network_address_for_dev_url,
+    write_options,
   },
-  ConfigValue, ErrorExt, Result,
 };
 use clap::{ArgAction, Parser};
 
@@ -143,13 +143,15 @@ fn run_command(options: Options, noise_level: NoiseLevel, dirs: Dirs) -> Result<
   delete_codegen_vars();
   // setup env additions before calling env()
   if let Some(root_certificate_path) = &options.root_certificate_path {
-    std::env::set_var(
-      "TAURI_DEV_ROOT_CERTIFICATE",
-      std::fs::read_to_string(root_certificate_path).fs_context(
-        "failed to read certificate file",
-        root_certificate_path.clone(),
-      )?,
-    );
+    unsafe {
+      std::env::set_var(
+        "TAURI_DEV_ROOT_CERTIFICATE",
+        std::fs::read_to_string(root_certificate_path).fs_context(
+          "failed to read certificate file",
+          root_certificate_path.clone(),
+        )?,
+      )
+    };
   }
   let tauri_config = get_tauri_config(
     tauri_utils::platform::Target::OpenHarmony,
@@ -326,7 +328,7 @@ fn run_dev(
         }),
       };
 
-      let _handle = write_options(tauri_config, cli_options)?;
+      let _handle = write_options(MobileTarget::OpenHarmony, dirs.tauri, cli_options)?;
 
       inject_resources(config, tauri_config)?;
 
